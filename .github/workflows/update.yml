@@ -1,4 +1,4 @@
-name: Aggiorna Gist con news docenti
+name: Aggiorna Gist con notizie docenti
 
 on:
   schedule:
@@ -21,28 +21,27 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
-      - name: Esegui lo script di aggiornamento
+      - name: Esegui scraping OrizzonteScuola
         run: node newsDocenti.js
 
-      - name: Aggiorna il Gist con il JSON
+      - name: Aggiorna il Gist con le news
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_GIST_TOKEN }}
           GIST_ID: ${{ secrets.GIST_ID }}
         run: |
-          echo "Caricamento del file newsDocenti.json su Gist..."
+          echo "Caricamento del file docenti-news.json su Gist..."
           node -e '
-            const fs = require("fs");
-            const https = require("https");
+            import fs from "fs";
+            import https from "https";
 
             const token = process.env.GITHUB_TOKEN;
             const gistId = process.env.GIST_ID;
-
-            const fileData = fs.readFileSync("newsDocenti.json", "utf8");
+            const newsData = fs.readFileSync("docenti-news.json", "utf8");
 
             const payload = {
               files: {
-                "newsDocenti.json": {
-                  content: fileData
+                "docenti-news.json": {
+                  content: newsData
                 }
               }
             };
@@ -61,11 +60,7 @@ jobs:
 
             const req = https.request(options, (res) => {
               let data = "";
-
-              res.on("data", (chunk) => {
-                data += chunk;
-              });
-
+              res.on("data", (chunk) => data += chunk);
               res.on("end", () => {
                 if (res.statusCode >= 200 && res.statusCode < 300) {
                   console.log("✅ Gist aggiornato con successo!");

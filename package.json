@@ -1,10 +1,11 @@
 {
   "name": "docenti-bot-data",
   "version": "1.0.0",
-  "description": "Scraping OrizzonteScuola per docenti e aggiornamento Gist",
+  "description": "Bot per news docenti",
+  "main": "newsDocenti.js",
   "type": "module",
   "dependencies": {
-    "axios": "^1.6.0",
+    "axios": "^1.6.8",
     "cheerio": "^1.0.0-rc.12"
   }
 }

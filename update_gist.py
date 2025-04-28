@@ -1,22 +1,51 @@
 import requests
 import json
 import os
+from datetime import datetime
+from bs4 import BeautifulSoup
 
 # ID della tua Gist
-GIST_ID = "47554691172b680172f003458025d7c3"
+GIST_ID = "53990edbd04b6a9a12c6d18e5e618b7e"
 
-# Nome del file dentro la gist (deve esistere già)
+# Nome del file nella Gist
 GIST_FILENAME = "data.json"
 
-# Carica il token segreto dalle variabili di ambiente
+# Carica il token GitHub
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
-# --- Qui generi i dati che vuoi caricare ---
+def scrape_news():
+    """
+    Fa scraping delle ultime notizie da orizzontescuola.it
+    """
+    url = "https://www.orizzontescuola.it/"
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    news_list = []
+
+    articles = soup.select("article")  # Prende tutti gli articoli
+    for article in articles[:5]:  # Prendiamo solo i primi 5
+        title_element = article.select_one("h3")
+        link_element = article.select_one("a")
+
+        if title_element and link_element:
+            news = {
+                "titolo": title_element.get_text(strip=True),
+                "descrizione": title_element.get_text(strip=True),
+                "link": link_element["href"]
+            }
+            news_list.append(news)
+
+    return news_list
+
 def generate_data():
-    # Esempio di dati fittizi
+    news = scrape_news()
     data = {
-        "message": "Buongiorno, docenti!",
-        "timestamp": "2025-04-28T10:00:00"
+        "news": news,
+        "aggiornato_il": datetime.utcnow().isoformat() + "Z"
     }
     return data
 

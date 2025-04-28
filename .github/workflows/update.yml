@@ -25,5 +25,5 @@ jobs:
 
     - name: Run update_gist.py script
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Usa il token GitHub predefinito
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_GIST_TOKEN }}  # Usa il token GitHub predefinito
       run: python update_gist.py

@@ -1,11 +1,10 @@
 {
   "name": "docenti-bot-data",
   "version": "1.0.0",
-  "description": "Aggiornatore dati news docenti per Telegram bot via GitHub Actions",
-  "main": "newsDocenti.js",
-  "scripts": {
-    "start": "node newsDocenti.js"
-  },
-  "author": "tonyco972",
-  "license": "MIT"
+  "description": "Scraping OrizzonteScuola per docenti e aggiornamento Gist",
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12"
+  }
 }

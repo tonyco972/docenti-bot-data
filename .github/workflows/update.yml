@@ -1,28 +1,29 @@
-name: Update Gist Twice Daily
+name: Update Gist with News
 
 on:
   schedule:
-    - cron: '0 7 * * *' # 07:00 UTC --> circa 09:00 italiane
-    - cron: '0 18 * * *' # 18:00 UTC --> circa 20:00 italiane
-  workflow_dispatch: # Permette di avviarlo anche a mano
+    - cron: '0 9,18 * * *'  # Due volte al giorno: 9 AM e 6 PM
+  workflow_dispatch:
 
 jobs:
-  update-gist:
+  update_gist:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
+    - name: Check out the repository
+      uses: actions/checkout@v2
+    
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: '3.13'
 
     - name: Install dependencies
-      run: pip install -r requirements.txt
-
-    - name: Run the script
-      env:
-        GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
+      run: |
+        pip install -r requirements.txt
+        python -m playwright install  # Aggiungi questo per installare i browser Playwright
+    
+    - name: Run update_gist.py script
       run: python update_gist.py
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

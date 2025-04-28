@@ -24,6 +24,6 @@ jobs:
         python -m playwright install  # Aggiungi questo per installare i browser Playwright
     
     - name: Run update_gist.py script
-      run: python update_gist.py
       env:
-        GITHUB_TOKEN: ${{ secrets.REPO }}  # Assicurati che il token GitHub segreto sia passato
+        GITHUB_TOKEN: ${{ secrets.REPO }}
+      run: python update_gist.py

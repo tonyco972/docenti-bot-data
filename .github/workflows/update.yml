@@ -1,29 +1,87 @@
-name: Update Gist with News
+name: Aggiorna Gist con news docenti
 
 on:
   schedule:
-    - cron: '0 9,18 * * *'  # Due volte al giorno: 9 AM e 6 PM
+    - cron: "0 6 * * *"
+    - cron: "0 18 * * *"
   workflow_dispatch:
 
 jobs:
-  update_gist:
+  run:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out the repository
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.13'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        python -m playwright install  # Aggiungi questo per installare i browser Playwright
+      - name: Install npm dependencies
+        run: npm install
 
-    - name: Run update_gist.py script
-      env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_GIST_TOKEN }}  # Usa il token GitHub predefinito
-      run: python update_gist.py
+      - name: Esegui lo script di aggiornamento
+        run: node newsDocenti.js
+
+      - name: Aggiorna il Gist con il JSON
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_GIST_TOKEN }}
+          GIST_ID: ${{ secrets.GIST_ID }}
+        run: |
+          echo "Caricamento del file newsDocenti.json su Gist..."
+          node -e '
+            const fs = require("fs");
+            const https = require("https");
+
+            const token = process.env.GITHUB_TOKEN;
+            const gistId = process.env.GIST_ID;
+
+            const fileData = fs.readFileSync("newsDocenti.json", "utf8");
+
+            const payload = {
+              files: {
+                "newsDocenti.json": {
+                  content: fileData
+                }
+              }
+            };
+
+            const options = {
+              hostname: "api.github.com",
+              path: `/gists/${gistId}`,
+              method: "PATCH",
+              headers: {
+                "User-Agent": "Node.js",
+                "Authorization": `token ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/vnd.github.v3+json"
+              }
+            };
+
+            const req = https.request(options, (res) => {
+              let data = "";
+
+              res.on("data", (chunk) => {
+                data += chunk;
+              });
+
+              res.on("end", () => {
+                if (res.statusCode >= 200 && res.statusCode < 300) {
+                  console.log("✅ Gist aggiornato con successo!");
+                } else {
+                  console.error(`❌ Errore: ${res.statusCode}`);
+                  console.error(data);
+                  process.exit(1);
+                }
+              });
+            });
+
+            req.on("error", (error) => {
+              console.error(`❌ Errore di rete: ${error.message}`);
+              process.exit(1);
+            });
+
+            req.write(JSON.stringify(payload));
+            req.end();
+          '

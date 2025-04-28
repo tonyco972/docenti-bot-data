@@ -26,4 +26,4 @@ jobs:
     - name: Run update_gist.py script
       run: python update_gist.py
       env:
-        GITHUB_TOKEN: ${{ secrets.GITTOKEN }}  # Assicurati che il token GitHub segreto sia passato
+        GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}  # Assicurati che il token GitHub segreto sia passato

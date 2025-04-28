@@ -3,7 +3,7 @@ import json
 import os
 
 # ID della tua Gist
-GIST_ID = "53990edbd04b6a9a12c6d18e5e618b7e"
+GIST_ID = "47554691172b680172f003458025d7c3"
 
 # Nome del file dentro la gist (deve esistere già)
 GIST_FILENAME = "data.json"

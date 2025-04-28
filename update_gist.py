@@ -7,10 +7,10 @@ from bs4 import BeautifulSoup
 # ID della tua Gist
 GIST_ID = "53990edbd04b6a9a12c6d18e5e618b7e"
 
-# Nome del file nella Gist
+# Nome del file dentro la Gist
 GIST_FILENAME = "data.json"
 
-# Carica il token GitHub
+# Carica il token GitHub dall'ambiente
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 def scrape_news():
@@ -19,7 +19,13 @@ def scrape_news():
     """
     url = "https://www.orizzontescuola.it/"
 
-    response = requests.get(url)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/123.0.0.0 Safari/537.36"
+    }
+
+    response = requests.get(url, headers=headers)
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "html.parser")
@@ -27,7 +33,7 @@ def scrape_news():
     news_list = []
 
     articles = soup.select("article")  # Prende tutti gli articoli
-    for article in articles[:5]:  # Prendiamo solo i primi 5
+    for article in articles[:5]:  # Prendiamo solo i primi 5 articoli
         title_element = article.select_one("h3")
         link_element = article.select_one("a")
 

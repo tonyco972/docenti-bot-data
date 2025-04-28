@@ -1,6 +1,7 @@
 import json
 import os
-from datetime import datetime
+import requests  # Aggiunto import per requests
+from datetime import datetime, timezone
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 
@@ -52,7 +53,7 @@ def generate_data():
     news = scrape_news()
     data = {
         "news": news,
-        "aggiornato_il": datetime.utcnow().isoformat() + "Z"
+        "aggiornato_il": datetime.now(timezone.utc).isoformat()  # Usa ora UTC
     }
     return data
 

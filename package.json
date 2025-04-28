@@ -1,0 +1,11 @@
+{
+  "name": "docenti-bot-data",
+  "version": "1.0.0",
+  "description": "Aggiornatore dati news docenti per Telegram bot via GitHub Actions",
+  "main": "newsDocenti.js",
+  "scripts": {
+    "start": "node newsDocenti.js"
+  },
+  "author": "tonyco972",
+  "license": "MIT"
+}

@@ -10,7 +10,7 @@ GIST_ID = "53990edbd04b6a9a12c6d18e5e618b7e"
 GIST_FILENAME = "data.json"
 
 # Carica il token GitHub dall'ambiente
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+GITHUB_TOKEN = os.getenv("GISTTOKEN")
 
 def scrape_news():
     """

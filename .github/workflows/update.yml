@@ -1,4 +1,4 @@
-name: Aggiorna Gist con news docenti
+name: Aggiorna news docenti
 
 on:
   schedule:
@@ -21,13 +21,63 @@ jobs:
       - name: Install npm dependencies
         run: npm install
 
-      - name: Esegui scraping news
-        run: node newsDocenti.js
+      - name: Run script
+        run: npm run start
 
-      - name: Aggiorna il Gist con le news
+      - name: Update Gist with docenti news
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_GIST_TOKEN }}
           GIST_ID: ${{ secrets.GIST_ID }}
         run: |
           echo "Caricamento del file docenti-news.json su Gist..."
-          node updateGist.js
+          node -e '
+            import fs from "fs";
+            import https from "https";
+
+            const token = process.env.GITHUB_TOKEN;
+            const gistId = process.env.GIST_ID;
+
+            const newsData = fs.readFileSync("docenti-news.json", "utf8");
+
+            const payload = {
+              files: {
+                "docenti-news.json": {
+                  content: newsData
+                }
+              }
+            };
+
+            const options = {
+              hostname: "api.github.com",
+              path: `/gists/${gistId}`,
+              method: "PATCH",
+              headers: {
+                "User-Agent": "Node.js",
+                "Authorization": `token ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/vnd.github.v3+json"
+              }
+            };
+
+            const req = https.request(options, (res) => {
+              let data = "";
+              res.on("data", (chunk) => { data += chunk; });
+              res.on("end", () => {
+                if (res.statusCode >= 200 && res.statusCode < 300) {
+                  console.log("✅ Gist aggiornato con successo!");
+                } else {
+                  console.error(`❌ Errore: ${res.statusCode}`);
+                  console.error(data);
+                  process.exit(1);
+                }
+              });
+            });
+
+            req.on("error", (error) => {
+              console.error(`❌ Errore di rete: ${error.message}`);
+              process.exit(1);
+            });
+
+            req.write(JSON.stringify(payload));
+            req.end();
+          ' --no-warnings --input-type=module
